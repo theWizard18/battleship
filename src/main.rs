@@ -1,25 +1,13 @@
+use rand::Rng;
 
-#[derive(Clone)]
-
-enum Cell {
-    Water,
-    Ship,
-    Destroyed,
-}
-
-impl Cell {
-    fn chr_sprite(&self) -> char {
-        match self {
-            Cell::Water => '.',
-            Cell::Ship => '@',
-            Cell::Destroyed => '*',
-        }
-    }
+fn main() {
+    let grid :Grid = Grid::new();
+    grid.print();
 }
 
 
 struct Grid {
-    cells :Vec<Vec<Cell>>,
+    cells :[[Cell; 10]; 10],
 }
 
 impl Grid {
@@ -32,30 +20,49 @@ impl Grid {
             println!(" {}", row_counter);
             row_counter += 1;
         }
-        println!(" A B C D E F G H I");
+        println!(" A B C D E F G H I J");
     }
 
-    fn new_of_size(size :u8) -> Grid {
-        let cell :Cell = Cell::Water;
-        let mut row :Vec<Cell> = Vec::new();
-        let mut column :Vec<Vec<Cell>> = Vec::new();
+    fn new() -> Grid {
+        let mut grid = Grid {
+            cells: [[Cell::Water; 10]; 10],
+        };
+        grid.distribute_ships();
+        grid
+    }
 
-        for _i in 0..size {
-            row.clear();
-            for _j in 0..size {
-                row.push(cell.clone());
-            }
-            column.push(row.clone());
-        }
-        Grid {
-            cells: column,
+    fn distribute_ships(&mut self) {
+        let mut ship_counter = 30;
+        let (mut x, mut y);
+        while ship_counter != 0{
+            (x,y) = (rand::thread_rng().gen_range(0..10), rand::thread_rng().gen_range(0..10));
+            match self.cells[x][y] {
+                Cell::Ship => continue,
+                _ => {
+                    self.cells[x][y] = Cell::Ship;
+                    ship_counter -= 1;
+                },
+            };
         }
     }
 }
 
 
-fn main() {
-    let grid :Grid = Grid::new_of_size(12);
-    grid.print();
+#[derive(Copy)]
+#[derive(Clone)]
+enum Cell {
+    Water,
+    Ship,
+    Shot,
+}
+
+impl Cell {
+    fn chr_sprite(&self) -> char {
+        match self {
+            Cell::Water => '.',
+            Cell::Ship => '@',
+            Cell::Shot => '*',
+        }
+    }
 }
 
