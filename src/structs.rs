@@ -26,19 +26,31 @@ impl Grid {
     }
 
     fn distribute_ships(&mut self) {
-        let mut ship_counter = 30;
+        let mut rng = rand::thread_rng();
         let (mut x, mut y);
-        while ship_counter != 0{
-            (x,y) = (rand::thread_rng().gen_range(0..10),
-                rand::thread_rng().gen_range(0..10));
-            match self.cells[x][y] {
-                Cell::Ship => continue,
-                _ => {
-                    self.cells[x][y] = Cell::Ship;
-                    ship_counter -= 1;
+        let mut is_horizontal: bool;
+        let ships_sizes: [usize; 15] =
+            [5, 4, 4, 3, 3, 3, 3, 3, 3, 3, 2, 2, 2, 2, 2,];
+        for i in ships_sizes {
+            (x,y) = (rng.gen_range(0..10), rng.gen_range(0..10));
+            is_horizontal = rng.gen_bool(0.5);
+            match is_horizontal {
+                false => {
+                    if i-1 + y < 10 {
+                        for j in 0..i {
+                            self.cells[x][y+j] = Cell::Ship;
+                        };
+                    };
+                },
+                true => {
+                    if i-1 + x < 10 {
+                        for j in 0..i {
+                            self.cells[x+j][y] = Cell::Ship;
+                        };
+                    };
                 },
             };
-        }
+        };
     }
 }
 
