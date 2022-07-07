@@ -34,11 +34,9 @@ impl Grid {
         for i in self.ships_sizes {
             loop {
                 (x,y) = (rng.gen_range(0..9), rng.gen_range(0..9));
-                println!("x = {}, y = {}, i = {}", x, y, i);
                 is_horizontal = rng.gen_bool(0.5);
                 match is_horizontal {
                     false => {
-                        println!("false debug");
                         if i-1 + y < 10 && !self.cells[x][y..y+i]
                                 .contains(&Cell::Ship) {
                             for j in 0..i {
@@ -48,9 +46,8 @@ impl Grid {
                         };
                     },
                     true => {
-                        println!("true debug");
                         if i-1 + x < 10 && !self.cells[x..x+i]
-                                .contains(&Cell::Ship) {
+                                .iter().any(|&row| &row[y] == &Cell::Ship) {
                             for j in 0..i {
                                 self.cells[x+j][y] = Cell::Ship;
                             };
