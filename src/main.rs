@@ -1,7 +1,7 @@
 mod structs;
-pub use crate::structs::Grid;
+pub use crate::structs::Game;
 
 fn main() {
-    let grid :Grid = Grid::new();
-    grid.print();
+    let game :Game = Game::new();
+    game.turn();
 }
