@@ -1,7 +1,8 @@
 mod structs;
+mod cell;
 pub use crate::structs::Game;
 
 fn main() {
-    let game :Game = Game::new();
+    let mut game :Game = Game::new();
     game.turn();
 }
