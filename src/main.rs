@@ -1,6 +1,9 @@
-mod structs;
+mod game;
 mod cell;
-pub use crate::structs::Game;
+mod player;
+mod grid;
+
+pub use crate::game::Game;
 
 fn main() {
     let mut game :Game = Game::new();
