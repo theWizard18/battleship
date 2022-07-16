@@ -3,29 +3,29 @@ use std::io::{self, Write};
 pub use crate::{player::Player, cell::Cell};
 
 pub struct Game {
-    human :Player,
-    machine :Player,
+    pub human :Player,
+    pub machine :Player,
 }
 impl Game {
     pub fn new() -> Game {
         Game {
-            human: Player::new("player".to_string()),
-            machine: Player::new("machine".to_string()),
+            human: Player::new("player".to_string(), false),
+            machine: Player::new("machine".to_string(), true),
         }
     }
 
     pub fn turn(&mut self) {
         self.print();
-        self.gen_human_move();
-        self.gen_machine_move();
+        self.gen_human_attack();
+        self.gen_machine_attack();
     }
 
-    fn gen_human_move(&mut self) {
+    fn gen_human_attack(&mut self) {
         let x = self.input_coord( true,
             "Enter the x coordinate (letters): ".to_string());
         let y = self.input_coord( false,
             "Enter the y coordinate (numbers): ".to_string());
-        self.human.attack = Some((x, y));
+        self.machine.grid.cells[y][x] = Cell::Shotted;
     }
 
     fn input_coord(&self, is_xcoord: bool, prompt_message: String) -> usize {
@@ -36,24 +36,37 @@ impl Game {
             io::stdout().flush().expect("prompt flush error");
             match io::stdin().read_line(&mut input) {
                 Ok(_) => result = input.remove(0),
-                Err(_) => continue,
+                Err(_) => {
+                    println!("error reading line");
+                    continue;
+                },
             };
 
             if is_xcoord {
-                match result.is_ascii_alphabetic() {
-                    true => result as usize - 65,
-                    false => continue,
+                match result.is_ascii_uppercase() {
+                    true => {
+                        return result as usize - 65;
+                    },
+                    false => {
+                        println!("error converting alphabetic input.\n
+                            Are you sure you entered an uppercase A-J letter?");
+                        continue;
+                    },
                 }
             } else {
                 match result.is_numeric() {
-                    true => result as usize,
-                    false => continue,
+                    true => return result as usize - 48,
+                    false => {
+                        println!("error converting numeric input.\n
+                            Are you sure you entered a number?");
+                        continue;
+                    },
                 }
             };
         }
     }
 
-    fn gen_machine_move(&mut self) {
+    fn gen_machine_attack(&mut self) {
         let mut rng = rand::thread_rng();
         let (mut x, mut y) :(usize, usize);
         loop {
@@ -62,7 +75,7 @@ impl Game {
                 break;
             }
         };
-        self.machine.attack = Some((x, y));
+        self.human.grid.cells[x][y] = Cell::Shotted;
     }
 
     fn print(&self) {

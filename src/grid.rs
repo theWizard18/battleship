@@ -11,7 +11,11 @@ impl Grid {
         let mut row_counter = 0;
         for row in &self.cells {
             for cell in row {
-                print!(" {}", cell.chr_sprite());
+                if self.hide && cell.clone() != Cell::Shotted {
+                    print!(" ?");
+                } else {
+                    print!(" {}", cell.chr_sprite());
+                };
             }
             println!(" {}", row_counter);
             row_counter += 1;
