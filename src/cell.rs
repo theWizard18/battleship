@@ -5,14 +5,16 @@
 pub enum Cell {
     Water,
     Ship,
-    Shotted,
+    StrikedShip,
+    StrikedWater,
 }
 impl Cell {
     pub fn chr_sprite(&self) -> char {
         match self {
             Cell::Water => '.',
             Cell::Ship => '@',
-            Cell::Shotted => '*',
+            Cell::StrikedShip => '*',
+            Cell::StrikedWater => '~',
         }
     }
 }

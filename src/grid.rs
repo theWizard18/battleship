@@ -11,16 +11,17 @@ impl Grid {
         let mut row_counter = 0;
         for row in &self.cells {
             for cell in row {
-                if self.hide && cell.clone() != Cell::Shotted {
-                    print!(" ?");
-                } else {
-                    print!(" {}", cell.chr_sprite());
-                };
+                match (self.hide, cell) {
+                    (true, Cell::Ship | Cell::Water) =>
+                        print!(" ?"),
+                    (_, _) =>
+                        print!(" {}", cell.chr_sprite()),
+                }
             }
             println!(" {}", row_counter);
             row_counter += 1;
         }
-        println!(" A B C D E F G H I J");
+        println!(" A B C D E F G H I J\n");
     }
 
     pub fn new(hide: bool) -> Grid {
@@ -31,6 +32,10 @@ impl Grid {
         };
         grid.distribute_ships();
         grid
+    }
+
+    pub fn has_ships(&self) -> bool {
+        self.cells.iter().any( |row| row.iter().any(|y| y.clone() == Cell::Ship))
     }
 
     fn distribute_ships(&mut self) {

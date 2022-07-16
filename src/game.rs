@@ -1,6 +1,7 @@
 use rand::Rng;
 use std::io::{self, Write};
-pub use crate::{player::Player, cell::Cell};
+pub use crate::player::Player;
+use crate::cell::Cell;
 
 pub struct Game {
     pub human :Player,
@@ -16,6 +17,7 @@ impl Game {
 
     pub fn turn(&mut self) {
         self.print();
+
         self.gen_human_attack();
         self.gen_machine_attack();
     }
@@ -25,17 +27,17 @@ impl Game {
             "Enter the x coordinate (letters): ".to_string());
         let y = self.input_coord( false,
             "Enter the y coordinate (numbers): ".to_string());
-        self.machine.grid.cells[y][x] = Cell::Shotted;
+        println!("\n\n");
+        self.human.process_attacked_cell(&mut self.machine, y, x);
     }
 
     fn input_coord(&self, is_xcoord: bool, prompt_message: String) -> usize {
-        let mut input = String::new();
-        let mut result: char;
         loop {
+            let mut input = String::new();
             print!("{}", prompt_message);
             io::stdout().flush().expect("prompt flush error");
-            match io::stdin().read_line(&mut input) {
-                Ok(_) => result = input.remove(0),
+            let result: char = match io::stdin().read_line(&mut input) {
+                Ok(_) => input.remove(0),
                 Err(_) => {
                     println!("error reading line");
                     continue;
@@ -43,13 +45,13 @@ impl Game {
             };
 
             if is_xcoord {
-                match result.is_ascii_uppercase() {
+                match (65..75).contains(&(result as u8)) {
                     true => {
                         return result as usize - 65;
                     },
                     false => {
-                        println!("error converting alphabetic input.\n
-                            Are you sure you entered an uppercase A-J letter?");
+                        println!("error converting alphabetic input.");
+                        println!("Are you sure you entered an uppercase A-J letter?");
                         continue;
                     },
                 }
@@ -57,8 +59,8 @@ impl Game {
                 match result.is_numeric() {
                     true => return result as usize - 48,
                     false => {
-                        println!("error converting numeric input.\n
-                            Are you sure you entered a number?");
+                        println!("error converting numeric input.");
+                        println!("Are you sure you entered a number?");
                         continue;
                     },
                 }
@@ -71,14 +73,16 @@ impl Game {
         let (mut x, mut y) :(usize, usize);
         loop {
             (x,y) = (rng.gen_range(0..10), rng.gen_range(0..10));
-            if self.human.grid.cells[x][y] != Cell::Shotted {
-                break;
+            match self.human.grid.cells[y][x] {
+                Cell::StrikedShip | Cell::StrikedWater => continue,
+                _ => break,
             }
         };
-        self.human.grid.cells[x][y] = Cell::Shotted;
+        self.machine.process_attacked_cell(&mut self.human, y, x);
     }
 
-    fn print(&self) {
+
+    pub fn print(&self) {
         self.machine.grid.print();
         self.human.grid.print();
     }
