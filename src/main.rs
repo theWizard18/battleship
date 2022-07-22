@@ -12,9 +12,9 @@ fn main() {
     };
     game.print();
     match (game.human.grid.has_ships(), game.machine.grid.has_ships()) {
-        (true, false) => println!("CONGLATULATIONS !!! YOU WON !!!!");
-        (false, true) => println!("Too bad, you lost");
-        (false, false) => println!("It's a draw.");
-        (_,_)=> println!("Uh-oh, something's wrong.");
+        (true, false) => println!("CONGLATULATIONS !!! YOU WON !!!!"),
+        (false, true) => println!("Too bad, you lost"),
+        (false, false) => println!("It's a draw."),
+        (_,_)=> println!("Uh-oh, something's wrong."),
     };
 }
